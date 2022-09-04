@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./scr/server.js"
+    "start-prod": "NODE_ENV=production node ./src/server.js",
+    "start-dev": "nodemon ./scr/server.js"
   },
   "author": "",
   "license": "ISC",
