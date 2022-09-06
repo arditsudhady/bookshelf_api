@@ -14,6 +14,26 @@ const addBookHandler = (request, h) => {
     reading,
   } = request.payload;
 
+  if (name === undefined) {
+    const response = h.response({
+      status: 'fail',
+      message: 'Gagal menambahkan buku. Mohon isi nama buku',
+    });
+    response.code(400);
+
+    return response;
+  }
+
+  if (pageCount < readPage) {
+    const response = h.response({
+      status: 'fail',
+      message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+    });
+    response.code(400);
+
+    return response;
+  }
+
   const id = nanoid(16);
   const insertedAt = new Date().toISOString();
   const updatedAt = insertedAt;
@@ -61,10 +81,30 @@ const addBookHandler = (request, h) => {
 
 // getAll book ================================================================
 const getAllBooksHandler = (request, h) => {
+  const { name, reading, finished } = request.query;
+
+  let filterbook = books;
+
+  if (name !== undefined) {
+    filterbook = filterbook.filter((book) => book
+      .name.toLowerCase().includes(name.toLowerCase()));
+  }
+
+  if (reading !== undefined) {
+    filterbook = filterbook.filter((book) => book.reading === !!Number(reading));
+  }
+
+  if (finished !== undefined) {
+    filterbook = filterbook.filter((book) => book.finished === !!Number(finished));
+  }
   const response = h.response({
     status: 'success',
     data: {
-      books,
+      books: filterbook.map((book) => ({
+        id: book.id,
+        name: book.name,
+        publisher: book.publisher,
+      })),
     },
   });
   response.code(200);
@@ -109,6 +149,26 @@ const editBookByIdHandler = (request, h) => {
     reading,
   } = request.payload;
   const updatedAt = new Date().toISOString();
+
+  if (name === undefined) {
+    const response = h.response({
+      status: 'fail',
+      message: 'Gagal menambahkan buku. Mohon isi nama buku',
+    });
+    response.code(400);
+
+    return response;
+  }
+
+  if (pageCount < readPage) {
+    const response = h.response({
+      status: 'fail',
+      message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+    });
+    response.code(400);
+
+    return response;
+  }
 
   const index = books.findIndex((book) => book.id === id);
 
